@@ -8,9 +8,13 @@ var app = express()
 server.listen(8090);
 
 io.sockets.on('connection', function (socket) {
+  socket.on('line-client', function (data) {
+    console.log("line info: ",data);
+    socket.broadcast.emit("line-server",data);
+  });
 
-  socket.on('line', function (color,x1,y1,x2,y2) {
-    console.log("line info: ",color,x1,y1,x2,y2);
-    socket.broadcast.emit("line",color,x1,y1,x2,y2);
+  socket.on('clear-client', function (data) {
+    console.log("line info: ",data);
+    socket.broadcast.emit("clear-server",data);
   });
 });

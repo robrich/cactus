@@ -117,7 +117,11 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				draw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y}, true);
+<<<<<<< HEAD
+				draw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y});
+=======
+				draw({color: userColor, x1: xPos, y1: yPos, x2: x, y2: y}, true);
+>>>>>>> 026b32a6ee99cdf0b74f187955e8a56c01e58fe3
 			}
 			xPos = x;
 			yPos = y;
