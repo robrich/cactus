@@ -8,16 +8,27 @@
   <script src="http://cactus.the.tl:8090/socket.io/socket.io.js"></script>
   <script>
     var draw
+    var ctx
+    var canvas
     var socket = io.connect('http://cactus.the.tl:8090');
     socket.on('line-server', function (data) {
       draw(data, false)
     });
 
-    window.onerror = function (e) {
-      //$(document.body).html(e + "<br>" + e.lineNumber)
-      alert(e)
-      return false
-    }
+    socket.on('clear-server', function (data) {
+      ctx.clearRect(0,0, canvas.width, canvas.height)
+    });
+
+   window.onerror = function (e) {
+     //$(document.body).html(e + "<br>" + e.lineNumber)
+     alert(e)
+     return false
+   }
+   window.onshake = function () {
+     ctx.clear() 
+     socket.emit("clear-client")
+     alert("shake")
+   }
   </script>
 	<style>
 	* {
@@ -61,9 +72,9 @@
 		var $topbar = $("#topbar");
 
 		var $canvas = $("#canvas");
-		var canvas = $canvas.get(0);
+		canvas = $canvas.get(0);
 
-		var ctx = canvas.getContext('2d');
+		ctx = canvas.getContext('2d');
 
 		draw = function (options, shouldEmit) {
 			if(options.color) {
