@@ -80,7 +80,9 @@
 			// touch
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
+					event.preventDefault();
 					handleMove(event.targetTouches[0].pageX, event.targetTouches[0].pageY);
+					return false;
 				});
 			});
 			$(document).bind('touchend', function (event) {
@@ -92,7 +94,9 @@
 			$canvas.mousedown(function (e) {
 				if (e.button === 0) {
 					$canvas.bind('mousemove', function (event) {
+						event.preventDefault();
 						handleMove(event.clientX, event.clientY);
+						return false;
 					});
 				}
 			});
