@@ -31,10 +31,13 @@
 
 		var ctx = canvas.getContext('2d');
 
-		var draw = function (x1, y1, x2, y2) {
+		var draw = function (options) {
+			if(options.color) {
+				ctx.strokeStyle = options.color;
+			}
 			ctx.beginPath();
-			ctx.moveTo(x1, y1);
-			ctx.lineTo(x2, y2);
+			ctx.moveTo(options.x1, options.y1);
+			ctx.lineTo(options.x2, options.y2);
 			ctx.stroke();
 		};
 
@@ -43,7 +46,7 @@
 		var canvasTop = canvas.offsetTop;
 
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
-		var drawing = false, xPos, yPos;
+		var drawing = false, userColor = "#000000", xPos, yPos;
 
 		var handleMove = function (x, y) {
 			// Offset the window drawing position by the canvas's position so it'll draw on the canvas
@@ -56,7 +59,7 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				draw(xPos, yPos, x, y);
+				draw({color: userColor, x1: xPos, y1: yPos, x2: x, y2: y});
 			}
 			xPos = x;
 			yPos = y;
