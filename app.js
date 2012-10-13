@@ -11,11 +11,7 @@ console.log("opening sockets...");
 io.sockets.on('connection', function (socket) {
 
   console.log(socket);
-
   socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
 
   socket.on('line', function (color,x1,y1,x2,y2) {
     console.log(color,x1,y1,x2,y2);
