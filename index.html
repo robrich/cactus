@@ -36,12 +36,17 @@
 		float: left;
 		margin-right: 0.2em;
 	}
+	#color, #linewidth {
+		width: 80px;
+	}
 	</style>
 </head>
 <body>
 <div id="topbar">
 	<div id="topContent">
-		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" /> Cactus Draw
+		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" /> <b>Cactus Draw</b>&nbsp;&nbsp;
+		<label for="color">color (hex)</label> <input type="color" id="color" name="color" placeholder="#000000" />&nbsp;&nbsp;
+		<label for="linewidth">line width</label> <input type="number" id="linewidth" name="linewidth" value="2" />
 	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
@@ -52,6 +57,8 @@
 
 		var $window = $(window);
 		var $topbar = $("#topbar");
+		var $color = $("#color");
+		var $linewidth = $("#linewidth");
 
 		var $canvas = $("#canvas");
 		var canvas = $canvas.get(0);
@@ -61,6 +68,9 @@
 		draw = function (options) {
 			if(options.color) {
 				ctx.strokeStyle = options.color;
+			}
+			if(options.width) {
+				ctx.lineWidth = options.width;
 			}
 			ctx.beginPath();
 			ctx.moveTo(options.x1, options.y1);
@@ -74,7 +84,7 @@
 		var canvasTop = canvas.offsetTop;
 
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
-		var drawing = false, userColor = "#000000", xPos, yPos;
+		var drawing = false, userColor = "#000000", userWidth = parseFloat($linewidth.val(), 10), xPos, yPos;
 
 		var handleMove = function (x, y) {
 			// Offset the window drawing position by the canvas's position so it'll draw on the canvas
@@ -87,7 +97,7 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				draw({color: userColor, x1: xPos, y1: yPos, x2: x, y2: y});
+				draw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y});
 			}
 			xPos = x;
 			yPos = y;
@@ -122,6 +132,17 @@
 				drawing = false;
 			});
 		}
+
+		$linewidth.change(function () {
+			var val = parseFloat($(this).val(),10);
+			if (isNaN(val) || val < 1) {
+				// Ignore invalid
+				$(this).val(userWidth);
+			} else {
+				userWidth = val;
+			}
+			console.log(userWidth);
+		});
 
 		// If the window resizes, resize the canvas
 		// FRAGILE: blanks the canvas in the process
