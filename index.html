@@ -31,17 +31,25 @@
 		overflow: hidden;
 	}
 	#topbar {
-		height: 48px;
+		height: 30px;
 		background-color: blue;
+		color: white;
+	}
+	#topContent {
+		padding: 2px 10px 2px 10px;
+		line-height: 26px;
 	}
 	#cactus {
-
+		float: left;
+		margin-right: 0.2em;
 	}
 	</style>
 </head>
 <body>
 <div id="topbar">
-	<img id="cactus" src="cactus.jpg" width="48px" height="48px" alt="Cactus" /> Cactus Draw
+	<div id="topContent">
+		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" /> Cactus Draw
+	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
