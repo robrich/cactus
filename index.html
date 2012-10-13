@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8" />
+  <meta name = "viewport" content = "initial-scale = 1.0">
 	<title>Canvas Draw</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
   <script src="http://cactus.the.tl:8090/socket.io/socket.io.js"></script>
@@ -11,6 +12,12 @@
     socket.on('line-server', function (data) {
       draw(data, false)
     });
+
+    window.onerror = function (e) {
+      //$(document.body).html(e + "<br>" + e.lineNumber)
+      alert(e)
+      return false
+    }
   </script>
 	<style>
 	* {
@@ -92,7 +99,8 @@
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
 					event.preventDefault();
-					handleMove(event.targetTouches[0].pageX, event.targetTouches[0].pageY);
+          var e = event.originalEvent
+					handleMove(e.touches[0].pageX, e.targetTouches[0].pageY);
 					return false;
 				});
 			});
