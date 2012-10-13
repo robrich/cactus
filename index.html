@@ -15,6 +15,12 @@
       draw(data, false)
     });
 
+    socket.on("drawing-server", function (drawing) {
+       for (var i = 0; i < drawing.length; i++) {
+          draw(drawing[i], false)
+       }
+    })
+
     socket.on('clear-server', function (data) {
       ctx.clearRect(0,0, canvas.width, canvas.height)
     });
