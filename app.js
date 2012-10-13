@@ -17,6 +17,11 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit("line-server",data);
   });
 
+  socket.on('image-client', function (data) {
+    console.log("image")
+    socket.broadcast.emit("image-server",data);
+  });
+
   socket.on('clear-client', function (data) {
     drawing = []
     console.log("line info: ",data);
