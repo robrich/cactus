@@ -23,9 +23,19 @@
 		height: 100%;
 		overflow: hidden;
 	}
+	#topbar {
+		height: 48px;
+		background-color: blue;
+	}
+	#cactus {
+
+	}
 	</style>
 </head>
 <body>
+<div id="topbar">
+	<img id="cactus" src="cactus.jpg" width="48px" height="48px" alt="Cactus" /> Cactus Draw
+</div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script>
@@ -33,6 +43,7 @@
 		"use strict";
 
 		var $window = $(window);
+		var $topbar = $("#topbar");
 
 		var $canvas = $("#canvas");
 		var canvas = $canvas.get(0);
@@ -80,7 +91,9 @@
 			// touch
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
+					event.preventDefault();
 					handleMove(event.targetTouches[0].pageX, event.targetTouches[0].pageY);
+					return false;
 				});
 			});
 			$(document).bind('touchend', function (event) {
@@ -92,7 +105,9 @@
 			$canvas.mousedown(function (e) {
 				if (e.button === 0) {
 					$canvas.bind('mousemove', function (event) {
+						event.preventDefault();
 						handleMove(event.clientX, event.clientY);
+						return false;
 					});
 				}
 			});
@@ -109,7 +124,7 @@
 			// TODO: capture data and write to avoid blanking on resize
 			//var data = ctx.getImageData();
 			canvas.width = $window.width();
-			canvas.height = $window.height();
+			canvas.height = $window.height() - $topbar.height();
 			//ctx.putImageData(data);
 		};
 		//$window.resize(resizeCanvas);
