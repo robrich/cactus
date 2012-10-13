@@ -69,7 +69,7 @@
 			// touch
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
-					handleMove(event.touches[0].clientX, event.touches[0].clientY);
+					handleMove(event.targetTouches[0].pageX, event.targetTouches[0].pageY);
 				});
 			});
 			$(document).bind('touchend', function (event) {
