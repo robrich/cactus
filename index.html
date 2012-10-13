@@ -8,8 +8,8 @@
   <script>
     var draw
     var socket = io.connect('http://cactus.the.tl:8090');
-    socket.on('line', function (data) {
-      draw(data)
+    socket.on('line-server', function (data) {
+      draw(data, false)
     });
   </script>
 	<style>
@@ -39,7 +39,7 @@
 
 		var ctx = canvas.getContext('2d');
 
-		draw = function (options) {
+		draw = function (options, shouldEmit) {
 			if(options.color) {
 				ctx.strokeStyle = options.color;
 			}
@@ -47,7 +47,9 @@
 			ctx.moveTo(options.x1, options.y1);
 			ctx.lineTo(options.x2, options.y2);
 			ctx.stroke();
-      socket.emit("line", options)
+      if (shouldEmit) {
+        socket.emit("line-client", options)
+      }
 		};
 
 		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
@@ -68,7 +70,7 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				draw({color: userColor, x1: xPos, y1: yPos, x2: x, y2: y});
+				draw({color: userColor, x1: xPos, y1: yPos, x2: x, y2: y}, true);
 			}
 			xPos = x;
 			yPos = y;
