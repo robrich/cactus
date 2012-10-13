@@ -113,16 +113,17 @@
 		var canvasTop = canvas.offsetTop;
 
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
-		var drawing = false, userColor = "#000000", userWidth = parseFloat($linewidth.val(), 10), xPos, yPos;
+		var userColor = localStorage.userColor || "#000000";
+		var userWidth = localStorage.userWidth || parseFloat($linewidth.val(), 10);
+		var drawing = false, xPos, yPos;
+
+		$color.val(userColor);
+		$linewidth.val(userWidth);
 
 		var handleMove = function (x, y) {
 			// Offset the window drawing position by the canvas's position so it'll draw on the canvas
 			var x = x - canvasLeft,
 				y = y - canvasTop;
-			if (x === xPos && y === yPos) {
-				return; // We're already there
-			}
-
 			if (!drawing) {
 				drawing = true;
 			} else {
@@ -169,14 +170,14 @@
 				// Ignore invalid
 				$(this).val(userWidth);
 			} else {
-				userWidth = val;
+				localStorage.userWidth = userWidth = val;
 			}
 		});
 
 		$color.change(function () {
 			var val = $(this).val();
 			// FRAGILE: presume it's a hex
-			userColor = val;
+			localStorage.userColor = userColor = val;
 		});
 
 		$clear.click(function (e) {
