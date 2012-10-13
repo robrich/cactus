@@ -166,7 +166,12 @@
 			} else {
 				userWidth = val;
 			}
-			console.log(userWidth);
+		});
+
+		$color.change(function () {
+			var val = $(this).val();
+			// FRAGILE: presume it's a hex
+			userColor = val;
 		});
 
 		// If the window resizes, resize the canvas
