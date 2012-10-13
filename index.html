@@ -2,9 +2,104 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title></title>
+	<title>Canvas Draw</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+	<style>
+	* {
+		border: 0;
+		margin: 0;
+		padding: 0;
+	}
+	html, body {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
+	</style>
 </head>
 <body>
+<canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script>
+	$(document).ready(function () {
+		"use strict";
 
+		var $window = $(window);
+
+		var $canvas = $("#canvas");
+		var canvas = $canvas.get(0);
+
+		var ctx = canvas.getContext('2d');
+
+		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
+		var drawing = false, xPos, yPos;
+		var draw = function (x, y) {
+			if (x === xPos && y === yPos) {
+				return; // We're already there
+			}
+			xPos = x;
+			yPos = y;
+
+			if (!drawing) {
+				ctx.beginPath();
+				ctx.moveTo(x, y);
+				drawing = true;
+			} else {
+				ctx.lineTo(x, y);
+				ctx.stroke();
+			}
+		};
+
+		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
+		var canvasLeft = canvas.offsetLeft;
+		var canvasTop = canvas.offsetTop;
+
+		var handleMove = function (e) {
+			var x = e.clientX - canvasLeft,
+				y = e.clientY - canvasTop;
+			draw(x, y);
+		};
+
+		if (Modernizr.touch) {
+			// touch
+			$canvas.bind('touchstart', function (e) {
+				$canvas.bind('touchmove', function (event) {
+					handleMove(event);
+				});
+			});
+			$(document).bind('touchend', function (event) {
+				$canvas.unbind('touchmove');
+				drawing = false;
+			});
+		} else {
+			// mouse
+			$canvas.mousedown(function (e) {
+				if (e.button === 0) {
+					$canvas.bind('mousemove', function (event) {
+						handleMove(event);
+					});
+				}
+			});
+			$(document).mouseup(function (event) {
+				$canvas.unbind('mousemove');
+				drawing = false;
+			});
+		}
+		
+		// If the window resizes, resize the canvas
+		// FRAGILE: blanks the canvas in the process
+		var resizeCanvas = function () {
+			// Can't set $("#canvas").width() because jQuery is going to scale, not resize
+			// TODO: capture data and write to avoid blanking on resize
+			//var data = ctx.getImageData();
+			canvas.width = $window.width();
+			canvas.height = $window.height();
+			//ctx.putImageData(data);
+		};
+		$window.resize(resizeCanvas);
+		resizeCanvas();
+
+	});
+</script>
 </body>
 </html>
