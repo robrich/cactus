@@ -24,11 +24,12 @@
      alert(e)
      return false
    }
-   window.onshake = function () {
-     ctx.clear() 
+
+   var clear = function () {
+     ctx.clearRect(0,0,canvas.width, canvas.height)
      socket.emit("clear-client")
-     alert("shake")
    }
+
   </script>
 	<style>
 	* {
@@ -58,8 +59,8 @@
 </head>
 <body>
 <div id="topbar">
-	<div id="topContent">
-		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" /> Cactus Draw
+	<div id="topContent" >
+		<img id="cactus"  src="/cactus.png" width="14px" height="21px" alt="Cactus" /> Cactus Draw
 	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
@@ -70,6 +71,9 @@
 
 		var $window = $(window);
 		var $topbar = $("#topbar");
+    $topbar.click(function () {
+      clear()
+    }) 
 
 		var $canvas = $("#canvas");
 		canvas = $canvas.get(0);
