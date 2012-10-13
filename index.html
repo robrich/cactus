@@ -4,6 +4,14 @@
 	<meta charset="utf-8" />
 	<title>Canvas Draw</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="http://cactus.the.tl:8090/socket.io/socket.io.js"></script>
+  <script>
+    var draw
+    var socket = io.connect('http://cactus.the.tl:8090');
+    socket.on('line', function (data) {
+      draw(data)
+    });
+  </script>
 	<style>
 	* {
 		border: 0;
@@ -31,7 +39,7 @@
 
 		var ctx = canvas.getContext('2d');
 
-		var draw = function (options) {
+		draw = function (options) {
 			if(options.color) {
 				ctx.strokeStyle = options.color;
 			}
@@ -39,6 +47,7 @@
 			ctx.moveTo(options.x1, options.y1);
 			ctx.lineTo(options.x2, options.y2);
 			ctx.stroke();
+      socket.emit("line", options)
 		};
 
 		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
@@ -101,7 +110,7 @@
 			canvas.height = $window.height();
 			//ctx.putImageData(data);
 		};
-		$window.resize(resizeCanvas);
+		//$window.resize(resizeCanvas);
 		resizeCanvas();
 
 	});
