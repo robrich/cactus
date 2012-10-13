@@ -31,40 +31,42 @@
 
 		var ctx = canvas.getContext('2d');
 
-		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
-		var drawing = false, xPos, yPos;
-		var draw = function (x, y) {
-			if (x === xPos && y === yPos) {
-				return; // We're already there
-			}
-			xPos = x;
-			yPos = y;
-
-			if (!drawing) {
-				ctx.beginPath();
-				ctx.moveTo(x, y);
-				drawing = true;
-			} else {
-				ctx.lineTo(x, y);
-				ctx.stroke();
-			}
+		var draw = function (x1, y1, x2, y2) {
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.stroke();
 		};
 
 		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
 		var canvasLeft = canvas.offsetLeft;
 		var canvasTop = canvas.offsetTop;
 
-		var handleMove = function (e) {
-			var x = e.clientX - canvasLeft,
-				y = e.clientY - canvasTop;
-			draw(x, y);
+		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
+		var drawing = false, xPos, yPos;
+
+		var handleMove = function (x, y) {
+			// Offset the window drawing position by the canvas's position so it'll draw on the canvas
+			var x = x - canvasLeft,
+				y = y - canvasTop;
+			if (x === xPos && y === yPos) {
+				return; // We're already there
+			}
+
+			if (!drawing) {
+				drawing = true;
+			} else {
+				draw(xPos, yPos, x, y);
+			}
+			xPos = x;
+			yPos = y;
 		};
 
 		if (Modernizr.touch) {
 			// touch
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
-					handleMove(event);
+					handleMove(event.touches[0].clientX, event.touches[0].clientY);
 				});
 			});
 			$(document).bind('touchend', function (event) {
@@ -76,7 +78,7 @@
 			$canvas.mousedown(function (e) {
 				if (e.button === 0) {
 					$canvas.bind('mousemove', function (event) {
-						handleMove(event);
+						handleMove(event.clientX, event.clientY);
 					});
 				}
 			});
