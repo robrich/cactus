@@ -24,11 +24,12 @@
      alert(e)
      return false
    }
-   window.onshake = function () {
-     ctx.clear() 
+
+   var clear = function () {
+     ctx.clearRect(0,0,canvas.width, canvas.height)
      socket.emit("clear-client")
-     alert("shake")
    }
+
   </script>
 	<style>
 	* {
@@ -75,6 +76,9 @@
 
 		var $window = $(window);
 		var $topbar = $("#topbar");
+    $topbar.click(function () {
+      clear()
+    }) 
 		var $color = $("#color");
 		var $linewidth = $("#linewidth");
 
