@@ -13,6 +13,7 @@ var img = null;
 io.sockets.on('connection', function (socket) {
   if (img) {
     socket.emit("image-server", img, function () {
+      console.log("sending drawing!!!!!!")
       socket.emit("drawing-server", drawing);
     }); 
   } else {
