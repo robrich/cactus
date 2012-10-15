@@ -1,1 +1,4 @@
-*.sw*
+[Tt]humbs.db
+.DS_Store*
+.idea
+*.orig
