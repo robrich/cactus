@@ -1,19 +1,21 @@
-var express = require("express")
-var io = require("socket.io")
+var express = require("express"),
+	io = require("socket.io"),
+	http = require("http");
 
-var app = express()
-  , server = require('http').createServer(app)
-  , io = io.listen(server);
+var app = express(),
+	server = http.createServer(app),
+	sio = io.listen(server);
 
+app.use(express.static(__dirname));
 server.listen(8090);
 
 var drawing = [];
 var img = null;
 
-io.sockets.on('connection', function (socket) {
+sio.sockets.on('connection', function (socket) {
   if (img) {
     socket.emit("image-server", img, function () {
-      console.log("sending drawing!!!!!!")
+      //console.log("sending drawing!!!!!!")
       socket.emit("drawing-server", drawing);
     }); 
   } else {

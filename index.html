@@ -5,13 +5,13 @@
   <meta name = "viewport" content = "initial-scale = 1.0, maximum-scale=1">
 	<title>Canvas Draw</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-  <script src="http://cactus.the.tl:8090/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     var draw
     var draw_image
     var ctx
     var canvas
-    var socket = io.connect('http://cactus.the.tl:8090');
+    var socket = io.connect('/');
     socket.on('line-server', function (data) {
       draw(data, false)
     });
