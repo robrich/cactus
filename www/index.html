@@ -88,6 +88,9 @@
 			var img = new Image();
 			img.onload = function(){
 				ctx.drawImage(img, 0, 0);
+				if (callback) {
+					callback();
+				}
 			};
 			img.src = options.image;
 		}
@@ -121,6 +124,11 @@
 		});
 		socket.on("image-server", function (data) {
 			drawImage(data, function () {
+				if (data.drawing) {
+					for (var i = 0; i < data.drawing.length; i++) {
+						draw(data.drawing[i]);
+					}
+				}
 			});
 		});
 		socket.on('clear-server', function (data) {

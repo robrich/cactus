@@ -25,12 +25,13 @@ server.listen(8090);
 var drawing = [];
 var img = null;
 
+// -server is "from server to client"
+// -client is "from client to server"
 sio.sockets.on('connection', function (socket) {
 	if (img) {
-		socket.emit("image-server", img, function () {
-			//console.log("sending drawing!!!!!!");
-			socket.emit("drawing-server", drawing);
-		}); 
+		img.drawing = drawing;
+		socket.emit("image-server", img);
+		img.drawing = undefined;
 	} else {
 		socket.emit("drawing-server", drawing);
 	}
