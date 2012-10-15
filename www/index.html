@@ -327,7 +327,10 @@
 			if (e.button !== 0) {
 				return;
 			}
-			clear();
+			if(confirm('are you sure you want to clear the image for all users?')) {
+				clear();
+				clearSend();
+			}
 			return false;
 		});
 
