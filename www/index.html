@@ -60,11 +60,21 @@
 	$(document).ready(function () {
 		"use strict";
 
+		var $window = $(window);
+		var $topbar = $("#topbar");
+		var $color = $("#color");
+		var $linewidth = $("#linewidth");
+		var $clear = $("#clear");
+
+		var $canvas = $("#canvas");
+		canvas = $canvas.get(0);
+
+		ctx = canvas.getContext('2d');
+		var socket = io.connect('/');
+		
+
 		var draw;
 		var draw_image;
-		var ctx;
-		var canvas;
-		var socket = io.connect('/');
 		socket.on('line-server', function (data) {
 			draw(data, false);
 		});
@@ -82,12 +92,6 @@
 		socket.on('clear-server', function (data) {
 			ctx.clearRect(0,0, canvas.width, canvas.height);
 		});
-
-		window.onerror = function (e) {
-			//$(document.body).html(e + "<br>" + e.lineNumber);
-			//alert(e);
-			return false;
-		};
 
 		var clear = function () {
 			ctx.clearRect(0,0,canvas.width, canvas.height);
@@ -122,19 +126,8 @@
 
 		document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-		var $window = $(window);
-		var $topbar = $("#topbar");
-		var $color = $("#color");
-		var $linewidth = $("#linewidth");
-		var $clear = $("#clear");
-
-		var $canvas = $("#canvas");
-		canvas = $canvas.get(0);
-
-		ctx = canvas.getContext('2d');
-		
 		draw_image = function(options, shouldEmit) {
-		var img = new Image();	// Create new img element
+			var img = new Image();
 			img.onload = function(){
 				ctx.drawImage(img, 0, 0);
 			};
@@ -258,6 +251,12 @@
 		};
 		//$window.resize(resizeCanvas);
 		resizeCanvas();
+
+		window.onerror = function (e) {
+			//$(document.body).html(e + "<br>" + e.lineNumber);
+			//alert(e);
+			return false;
+		};
 
 	});
 </script>
