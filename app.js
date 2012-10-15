@@ -1,3 +1,6 @@
+/*global node:true */
+"use strict";
+
 var express = require("express"),
 	io = require("socket.io"),
 	http = require("http");
@@ -36,7 +39,7 @@ sio.sockets.on('connection', function (socket) {
 		socket.emit("drawing-server", drawing);
 	}
 	socket.on('line-client', function (data) {
-		drawing.push(data)
+		drawing.push(data);
 		socket.broadcast.emit("line-server",data);
 	});
 

@@ -19,8 +19,7 @@
 	}
 	#topbar {
 		height: 36px;
-		background-color: #C9B04D;
-		background-image: url('sand.jpg');
+		background: #C9B04D url('sand.jpg');
 	}
 	#topContent {
 		padding: 2px 10px 2px 10px;
@@ -59,6 +58,11 @@
 	$(document).ready(function () {
 		"use strict";
 
+		if (!Modernizr.canvas) {
+			alert("your browser doesn't support canvas");
+			return;
+		}
+
 		var $window = $(window);
 		var $topbar = $("#topbar");
 		var $color = $("#color");
@@ -73,7 +77,7 @@
 
 		var ctx = canvas.getContext('2d');
 		var socket = io.connect('/');
-		
+
 		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
 		var canvasLeft = canvas.offsetLeft;
 		var canvasTop = canvas.offsetTop;
@@ -95,7 +99,7 @@
 				}
 			};
 			img.src = options.image;
-		}
+		};
 		var draw = function (options) {
 			if(options.color) {
 				ctx.strokeStyle = options.color;
@@ -159,22 +163,22 @@
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
 		var drawing = false, xPos, yPos;
 		var userColor = localStorage.userColor || $color.val();
-		var userWidth = localStorage.userWidth || parseFloat($linewidth.val(), 10);
+		var userWidth = localStorage.userWidth || parseFloat($linewidth.val());
 		// If we pulled values from localStorage, we need to populate the interface
 		$color.val(userColor);
 		$linewidth.val(userWidth);
 
 		var handleMove = function (x, y) {
 			// Offset the window drawing position by the canvas's position so it'll draw on the canvas
-			var x = x - canvasLeft,
-				y = y - canvasTop;
+			var x2 = x - canvasLeft,
+				y2 = y - canvasTop;
 			if (!drawing) {
 				drawing = true;
 			} else {
-				doTheDraw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y});
+				doTheDraw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x2, y2: y2});
 			}
-			xPos = x;
-			yPos = y;
+			xPos = x2;
+			yPos = y2;
 		};
 
 		if (Modernizr.touch) {
@@ -182,7 +186,7 @@
 			$canvas.bind('touchstart', function (e) {
 				$canvas.bind('touchmove', function (event) {
 					event.preventDefault();
-					var e = event.originalEvent
+					var e = event.originalEvent;
 					handleMove(e.touches[0].pageX, e.targetTouches[0].pageY);
 					return false;
 				});
@@ -308,7 +312,7 @@
 		//
 
 		$linewidth.change(function () {
-			var val = parseFloat($(this).val(),10);
+			var val = parseFloat($(this).val());
 			if (isNaN(val) || val < 1 || val > 100) {
 				// Ignore invalid
 				$(this).val(userWidth);
@@ -321,7 +325,7 @@
 		$color.change(function () {
 			var val = $(this).val();
 			// FRAGILE: presume it's a valid color
-			userColor = val
+			userColor = val;
 			localStorage.userColor = val;
 		});
 
@@ -356,16 +360,16 @@
 		*/
 
 		// If the window resizes, resize the canvas
-		// FRAGILE: blanks the canvas in the process
 		var resizeCanvas = function () {
 			// Can't set $("#canvas").width() because jQuery is going to scale, not resize
-			// TODO: capture data and write to avoid blanking on resize
-			//var data = ctx.getImageData();
+			var data = (ctx && canvas) ? canvas.toDataURL() : null;
 			canvas.width = $window.width();
 			canvas.height = $window.height() - $topbar.height();
-			//ctx.putImageData(data);
+			if (ctx && canvas && data) {
+				drawImage({image:data});
+			}
 		};
-		//$window.resize(resizeCanvas);
+		$window.resize(resizeCanvas);
 		resizeCanvas();
 
 		window.onerror = function (e) {
