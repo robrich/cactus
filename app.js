@@ -7,8 +7,21 @@ var app = express(),
 	sio = io.listen(server);
 
 app.use(express.static(__dirname+'/www'));
+
+sio.configure(function () {
+	/*
+	https://github.com/learnboost/socket.io/wiki/Configuring-Socket.IO
+	0 - error
+	1 - warn
+	2 - info
+	3 - debug
+	*/
+	sio.set('log level', 1);
+});
+
 server.listen(8090);
 
+// Store state so we can broadcast it to clients that connect late or reconnect
 var drawing = [];
 var img = null;
 
