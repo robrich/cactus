@@ -47,7 +47,8 @@
 		<input type="color" id="color" name="color" value="#000000" placeholder="#000000" />&nbsp;&nbsp;
 		<input type="number" id="linewidth" name="linewidth" value="2" />&nbsp;&nbsp;
 		<input type="file" id="files" name="files" /><input type="button" name="fakefiles" id="fakefiles" value="img" />&nbsp;&nbsp;
-		<input type="button" name="clear" id="clear" value="clear" />
+		<input type="button" name="clear" id="clear" value="clear" />&nbsp;&nbsp;
+		<input type="button" name="save" id="save" value="save" />
 	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
@@ -65,6 +66,7 @@
 		var $clear = $("#clear");
 		var $files = $("#files");
 		var $fakefiles = $("#fakefiles");
+		var $save = $("#save");
 
 		var $canvas = $("#canvas");
 		var canvas = $canvas.get(0);
@@ -331,6 +333,19 @@
 				clear();
 				clearSend();
 			}
+			return false;
+		});
+
+		$save.click(function (e) {
+			if (e.button !== 0) {
+				return; // It wasn't a left click
+			}
+			// Setting a filename and default extension requires server interaction:
+			// http://www.joeltrost.com/blog/2012/01/29/html5-canvas-save-a-jpeg-with-extension/
+			var data = canvas.toDataURL();
+			var prev = window.location.href;
+			window.location.href = data.replace("image/png", "image/octet-stream");
+			//window.location.href = prev;
 			return false;
 		});
 
