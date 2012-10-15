@@ -6,7 +6,7 @@ var app = express(),
 	server = http.createServer(app),
 	sio = io.listen(server);
 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname+'/www'));
 server.listen(8090);
 
 var drawing = [];
