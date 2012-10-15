@@ -18,24 +18,22 @@
 		overflow: hidden;
 	}
 	#topbar {
-		height: 30px;
+		height: 36px;
 		background-color: #C9B04D;
 		background-image: url('sand.jpg');
 	}
 	#topContent {
 		padding: 2px 10px 2px 10px;
-		line-height: 26px;
-	}
-	#cactus {
-		float: left;
-		margin-right: 0.2em;
 	}
 	#color, #linewidth {
 		width: 40px;
 	}
-	#clear {
+	input[type='button'] {
 		padding: 4px;
 		border: 1px solid #cccccc;
+	}
+	#files {
+		display: none;
 	}
 	#canvas {
 		cursor: pointer;
@@ -48,8 +46,8 @@
 		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" />&nbsp;&nbsp;
 		<input type="color" id="color" name="color" value="#000000" placeholder="#000000" />&nbsp;&nbsp;
 		<input type="number" id="linewidth" name="linewidth" value="2" />&nbsp;&nbsp;
-		<input type="button" name="clear" id="clear" value="clear" />&nbsp;&nbsp;
-		<input type="file" id="files" name="files" />
+		<input type="file" id="files" name="files" /><input type="button" name="fakefiles" id="fakefiles" value="img" />&nbsp;&nbsp;
+		<input type="button" name="clear" id="clear" value="clear" />
 	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
@@ -65,6 +63,8 @@
 		var $color = $("#color");
 		var $linewidth = $("#linewidth");
 		var $clear = $("#clear");
+		var $files = $("#files");
+		var $fakefiles = $("#fakefiles");
 
 		var $canvas = $("#canvas");
 		var canvas = $canvas.get(0);
@@ -149,6 +149,11 @@
 		// mouse and touch move handlers
 		//
 
+		var doTheDraw = function (data) {
+			draw(data);
+			drawSend(data);
+		};
+
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
 		var drawing = false, xPos, yPos;
 		var userColor = localStorage.userColor || $color.val();
@@ -164,9 +169,7 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				var data = {color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y};
-				draw(data);
-				drawSend(data);
+				doTheDraw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y});
 			}
 			xPos = x;
 			yPos = y;
@@ -205,6 +208,100 @@
 		}
 
 		//
+		// file upload
+		//
+
+		var doTheImage = function (imageData) {
+			var options = {image: imageData};
+			drawImage(options);
+			drawImageSend(options);
+		};
+
+		var imageResize = function (img) {
+
+			var maxWidth = canvas.width;
+			var maxHeight = canvas.height;
+
+			var imgWidth = img.width;
+			var imgHeight = img.height;
+
+			if (imgWidth > maxWidth) {
+				imgHeight = Math.round(imgHeight * maxWidth/imgWidth);
+				imgWidth = maxWidth;
+			}
+			if (imgHeight > maxHeight) {
+				imgWidth = Math.round(imgWidth * maxHeight/imgHeight);
+				imgHeight = maxHeight;
+			}
+
+			var data = null;
+
+			if (imgWidth !== img.width || imgHeight !== img.height) {
+				// resize
+				var resizeCanvas = $("<canvas>").get(0);
+				resizeCanvas.width = imgWidth;
+				resizeCanvas.height = imgHeight;
+				var resizeCanvasCtx = resizeCanvas.getContext('2d');
+				resizeCanvasCtx.drawImage(img, 0, 0, imgWidth, imgHeight);
+				data = resizeCanvas.toDataURL("image/jpeg");
+			} else {
+				// no need to resize
+				data = img.src;
+			}
+			doTheImage(data);
+		};
+
+		var fileToImage = function(fileContent) {
+			var resizeImg = new Image();
+			resizeImg.onload = function () {
+				imageResize(resizeImg);
+			};
+			resizeImg.src = fileContent;
+		};
+
+		var handleFile = function (f) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				fileToImage(e.target.result);
+			};
+			// Read in the image file as a data URL.
+			reader.readAsDataURL(f);
+		};
+
+		var handleFileSelect = function (evt) {
+			var files = evt.target.files, i, f, chosen;
+			for (i = 0; i < files.length; i++) {
+				f = files[i];
+				// Only process image files.
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+				handleFile(f);
+				// clear the file control
+				$files.val('');
+				chosen = true;
+				break; // Only grab the first one
+			}
+			if (!chosen) {
+				alert("Pick an image file");
+			}
+			$files.val(''); // clear the file control
+		};
+
+		if (FileReader) {
+			$files.change(handleFileSelect);
+			$fakefiles.click(function (e) {
+				if (e.button === 0) {
+					$files.click(); // Shim from fake, stylable button to real button
+					return false;
+				}
+			});
+		} else {
+			$files.hide();
+			$fakefiles.hide();
+		}
+
+		//
 		// other button handlers
 		//
 
@@ -233,36 +330,6 @@
 			clear();
 			return false;
 		});
-
-		var handleFileSelect = function (evt) {
-			var files = evt.target.files; // FileList object
-
-			// Loop through the FileList and render image files as thumbnails.
-			for (var i = 0, f; f = files[i]; i++) {
-
-				// Only process image files.
-				if (!f.type.match('image.*')) {
-					continue;
-				}
-
-				var reader = new FileReader();
-
-				// Closure to capture the file information.
-				reader.onload = (function(theFile) {
-					return function(e) {
-						// Render thumbnail.
-						var data = {image: e.target.result};
-						drawImage(data);
-						drawImageSend(data)
-					};
-				})(f);
-
-				// Read in the image file as a data URL.
-				reader.readAsDataURL(f);
-			}
-		};
-
-		document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 		/*
 		if (!Modernizr.inputtypes.color) {
