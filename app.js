@@ -13,28 +13,28 @@ var drawing = [];
 var img = null;
 
 sio.sockets.on('connection', function (socket) {
-  if (img) {
-    socket.emit("image-server", img, function () {
-      //console.log("sending drawing!!!!!!")
-      socket.emit("drawing-server", drawing);
-    }); 
-  } else {
-    socket.emit("drawing-server", drawing);
-  }
-  socket.on('line-client', function (data) {
-    drawing.push(data)
-    socket.broadcast.emit("line-server",data);
-  });
+	if (img) {
+		socket.emit("image-server", img, function () {
+			//console.log("sending drawing!!!!!!");
+			socket.emit("drawing-server", drawing);
+		}); 
+	} else {
+		socket.emit("drawing-server", drawing);
+	}
+	socket.on('line-client', function (data) {
+		drawing.push(data)
+		socket.broadcast.emit("line-server",data);
+	});
 
-  socket.on('image-client', function (data) {
-    img = data;
-    drawing = []; // Image overwrites it
-    socket.broadcast.emit("image-server",data);
-  });
+	socket.on('image-client', function (data) {
+		img = data;
+		drawing = []; // Image overwrites it
+		socket.broadcast.emit("image-server",data);
+	});
 
-  socket.on('clear-client', function (data) {
-    drawing = [];
-    img = null;
-    socket.broadcast.emit("clear-server",data);
-  });
+	socket.on('clear-client', function (data) {
+		drawing = [];
+		img = null;
+		socket.broadcast.emit("clear-server",data);
+	});
 });
