@@ -38,18 +38,19 @@
 		padding: 4px;
 		border: 1px solid #cccccc;
 	}
+	#canvas {
+		cursor: pointer;
+	}
 	</style>
 </head>
 <body>
 <div id="topbar">
 	<div id="topContent">
-		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" /> <b>Cactus Draw</b>&nbsp;&nbsp;
-		<input type="color" id="color" name="color" placeholder="#000000" />&nbsp;&nbsp;
+		<img id="cactus" src="/cactus.png" width="14px" height="21px" alt="Cactus" />&nbsp;&nbsp;
+		<input type="color" id="color" name="color" value="#000000" placeholder="#000000" />&nbsp;&nbsp;
 		<input type="number" id="linewidth" name="linewidth" value="2" />&nbsp;&nbsp;
-		<input type="button" name="clear" id="clear" value="clear" />
-
-<input style="float:right;" type="file" id="files" name="files[]" multiple />
-
+		<input type="button" name="clear" id="clear" value="clear" />&nbsp;&nbsp;
+		<input type="file" id="files" name="files" />
 	</div>
 </div>
 <canvas id="canvas" width="100" height="100"><p>Your browser doesn't support canvas</p></canvas>
@@ -67,76 +68,31 @@
 		var $clear = $("#clear");
 
 		var $canvas = $("#canvas");
-		canvas = $canvas.get(0);
+		var canvas = $canvas.get(0);
 
-		ctx = canvas.getContext('2d');
+		var ctx = canvas.getContext('2d');
 		var socket = io.connect('/');
 		
+		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
+		var canvasLeft = canvas.offsetLeft;
+		var canvasTop = canvas.offsetTop;
 
-		var draw;
-		var draw_image;
-		socket.on('line-server', function (data) {
-			draw(data, false);
-		});
-
-		socket.on("drawing-server", function (drawing) {
-			for (var i = 0; i < drawing.length; i++) {
-				draw(drawing[i], false);
-			}
-		});
-
-		socket.on("image-server", function (options) {
-			draw_image(options, false);
-		});
-
-		socket.on('clear-server', function (data) {
-			ctx.clearRect(0,0, canvas.width, canvas.height);
-		});
+		//
+		// drawing functions
+		//
 
 		var clear = function () {
 			ctx.clearRect(0,0,canvas.width, canvas.height);
-			socket.emit("clear-client");
 		};
 
-		function handleFileSelect(evt) {
-			var files = evt.target.files; // FileList object
-
-			// Loop through the FileList and render image files as thumbnails.
-			for (var i = 0, f; f = files[i]; i++) {
-
-				// Only process image files.
-				if (!f.type.match('image.*')) {
-					continue;
-				}
-
-				var reader = new FileReader();
-
-				// Closure to capture the file information.
-				reader.onload = (function(theFile) {
-					return function(e) {
-						// Render thumbnail.
-						draw_image({image: e.target.result}, true)
-					};
-				})(f);
-
-				// Read in the image file as a data URL.
-				reader.readAsDataURL(f);
-			}
-		};
-
-		document.getElementById('files').addEventListener('change', handleFileSelect, false);
-
-		draw_image = function(options, shouldEmit) {
+		var drawImage = function(options, callback) {
 			var img = new Image();
 			img.onload = function(){
 				ctx.drawImage(img, 0, 0);
 			};
-			img.src = options.image
-			if (shouldEmit) {
-				socket.emit("image-client", options);
-			}
+			img.src = options.image;
 		}
-		draw = function (options, shouldEmit) {
+		var draw = function (options) {
 			if(options.color) {
 				ctx.strokeStyle = options.color;
 			}
@@ -148,20 +104,49 @@
 			ctx.lineTo(options.x2, options.y2);
 			ctx.lineCap = "round";
 			ctx.stroke();
-			if (shouldEmit) {
-				socket.emit("line-client", options);
-			}
 		};
 
-		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
-		var canvasLeft = canvas.offsetLeft;
-		var canvasTop = canvas.offsetTop;
+		//
+		// socket-io functions
+		//
+
+		// -server is "from server to client"
+		// -client is "from client to server"
+		socket.on('line-server', function (data) {
+			draw(data);
+		});
+		socket.on("drawing-server", function (drawing) {
+			for (var i = 0; i < drawing.length; i++) {
+				draw(drawing[i]);
+			}
+		});
+		socket.on("image-server", function (data) {
+			drawImage(data, function () {
+			});
+		});
+		socket.on('clear-server', function (data) {
+			clear();
+		});
+
+		var drawSend = function (data) {
+			socket.emit("line-client", data);
+		};
+		var drawImageSend = function (data) {
+			socket.emit("image-client", data);
+		};
+		var clearSend = function () {
+			socket.emit("clear-client");
+		};
+
+		//
+		// mouse and touch move handlers
+		//
 
 		// xPos and yPos are previous point, drawing is 'mouse or touch is down' e.g. currently drawing
-		var userColor = localStorage.userColor || "#000000";
-		var userWidth = localStorage.userWidth || parseFloat($linewidth.val(), 10);
 		var drawing = false, xPos, yPos;
-
+		var userColor = localStorage.userColor || $color.val();
+		var userWidth = localStorage.userWidth || parseFloat($linewidth.val(), 10);
+		// If we pulled values from localStorage, we need to populate the interface
 		$color.val(userColor);
 		$linewidth.val(userWidth);
 
@@ -172,7 +157,9 @@
 			if (!drawing) {
 				drawing = true;
 			} else {
-				draw({color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y}, true);
+				var data = {color: userColor, width: userWidth, x1: xPos, y1: yPos, x2: x, y2: y};
+				draw(data);
+				drawSend(data);
 			}
 			xPos = x;
 			yPos = y;
@@ -201,6 +188,7 @@
 						handleMove(event.clientX, event.clientY);
 						return false;
 					});
+					return false;
 				}
 			});
 			$(document).mouseup(function (event) {
@@ -209,20 +197,26 @@
 			});
 		}
 
+		//
+		// other button handlers
+		//
+
 		$linewidth.change(function () {
 			var val = parseFloat($(this).val(),10);
-			if (isNaN(val) || val < 1) {
+			if (isNaN(val) || val < 1 || val > 100) {
 				// Ignore invalid
 				$(this).val(userWidth);
 			} else {
-				localStorage.userWidth = userWidth = val;
+				userWidth = val;
+				localStorage.userWidth = val;
 			}
 		});
 
 		$color.change(function () {
 			var val = $(this).val();
-			// FRAGILE: presume it's a hex
-			localStorage.userColor = userColor = val;
+			// FRAGILE: presume it's a valid color
+			userColor = val
+			localStorage.userColor = val;
 		});
 
 		$clear.click(function (e) {
@@ -232,6 +226,36 @@
 			clear();
 			return false;
 		});
+
+		var handleFileSelect = function (evt) {
+			var files = evt.target.files; // FileList object
+
+			// Loop through the FileList and render image files as thumbnails.
+			for (var i = 0, f; f = files[i]; i++) {
+
+				// Only process image files.
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+
+				var reader = new FileReader();
+
+				// Closure to capture the file information.
+				reader.onload = (function(theFile) {
+					return function(e) {
+						// Render thumbnail.
+						var data = {image: e.target.result};
+						drawImage(data);
+						drawImageSend(data)
+					};
+				})(f);
+
+				// Read in the image file as a data URL.
+				reader.readAsDataURL(f);
+			}
+		};
+
+		document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 		/*
 		if (!Modernizr.inputtypes.color) {
