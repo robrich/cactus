@@ -58,6 +58,8 @@
 	$(document).ready(function () {
 		"use strict";
 
+		var room = "1234";
+
 		if (!Modernizr.canvas) {
 			alert("your browser doesn't support canvas");
 			return;
@@ -120,6 +122,9 @@
 
 		// -server is "from server to client"
 		// -client is "from client to server"
+		socket.on('connect', function () {
+			socket.emit("connect-client", room);
+		});
 		socket.on('line-server', function (data) {
 			draw(data);
 		});
