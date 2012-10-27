@@ -4021,4 +4021,11 @@ var io = ('undefined' === typeof module ? {} : module.exports);
 			cactusdraw($(this));
 		});
 	};
+	
+	// FRAGILE: A bit weird for a plugin to launch itself,
+	// FRAGILE: but must presume the class name for css
+	// FRAGILE: so may as well just make it easier for users to consume
+	$(document).ready(function () {
+		$(".cactusdraw").cactusdraw();
+	});
 })(jQuery, window, window.document);
