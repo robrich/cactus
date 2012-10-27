@@ -1,0 +1,75 @@
+.cactusdraw {
+	position: relative;
+}
+.cactusdraw * {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+.cactusdraw .topbar {
+	height: 36px;
+	background: #C9B04D url('sand.jpg');
+}
+.cactusdraw .topContent {
+	padding: 2px 10px 2px 10px;
+}
+.cactusdraw .color, .cactusdraw .linewidth {
+	width: 40px;
+}
+.cactusdraw input[type='button'] {
+	padding: 4px;
+	border: 1px solid #cccccc;
+}
+.cactusdraw .files {
+	display: none;
+}
+.cactusdraw .canvas {
+	cursor: pointer;
+}
+
+.cactusdraw .colorPicker-picker {
+	height: 16px;
+	width: 32px;
+	padding: 0;
+	border: 1px solid #ccc;
+	background: url('arrow.gif') no-repeat top right;
+	cursor: pointer;
+	line-height: 16px;
+	display: inline-block;
+}
+
+.cactusdraw .colorPicker-palette {
+	width: 110px;
+	position: absolute;
+	border: 1px solid #598FEF;
+	background-color: #EFEFEF;
+	padding: 2px;
+	z-index: 9999;
+}
+.cactusdraw .colorPicker_hexWrap {
+	width: 100%;
+	float:left;
+}
+.cactusdraw .colorPicker_hexWrap label {
+	font-size: 95%;
+	color: #2F2F2F;
+	margin: 5px 2px;
+	width: 25%;
+}
+.cactusdraw .colorPicker_hexWrap input {
+	margin: 5px 2px;
+	padding: 0;
+	font-size: 95%;
+	border: 1px solid #000;
+	width: 65%;
+}
+
+.cactusdraw .colorPicker-swatch {
+	height: 12px;
+	width: 12px;
+	border: 1px solid #000;
+	margin: 2px;
+	float: left;
+	cursor: pointer;
+	line-height: 12px;
+}

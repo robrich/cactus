@@ -1,0 +1,42 @@
+{
+  "name": "cactusdraw",
+  "description": "Collaborative drawing app as a jQuery widget",
+  "version": "0.0.1",
+  "homepage": "http://cactusdraw.com",
+  "author": {
+    "name": "Rob Richardson",
+    "email": "robrich@robrich.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robrich/cactus"
+  },
+  "bugs": {
+    "url": "https://github.com/robrich/cactus/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://en.wikipedia.org/wiki/MIT_License"
+    }
+  ],
+  "main": "app.js",
+  "engines": {
+    "node": "0.8.x"
+  },
+  "scripts": {
+    "start": "app.js"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.17"
+  },
+  "subdomain": "cactusdraw",
+  "domains": [
+    "cactusdraw.com",
+    "www.cactusdraw.com"
+  ],
+  "bundleDependencies": [
+    "express",
+    "socket.io"
+  ]
+}
