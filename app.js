@@ -32,15 +32,15 @@ server.listen(port, function () {
 });
 
 // Store state so we can broadcast it to clients that connect late or reconnect
-var sessions = {};
+var rooms = {};
 
 // -server is "from server to client"
 // -client is "from client to server"
 sio.sockets.on('connection', function (socket) {
-	var socketSession = null;
+	var theRoom = null;
 	
 	var broadcast = function (event, data) {
-		sio.sockets.in(socketSession.room).emit(event, data)
+		sio.sockets.in(theRoom.room).emit(event, data)
 	};
 
 	socket.on('connect-client', function (data) {
@@ -51,54 +51,52 @@ sio.sockets.on('connection', function (socket) {
 		}
 
 		// Create the session if it doesn't exist
-		if (!Object.prototype.hasOwnProperty.call(sessions, room)) {
-			sessions[room] = {
+		if (!Object.prototype.hasOwnProperty.call(rooms, room)) {
+			rooms[room] = {
 				drawing: [],
-				//sockets: [],
 				img: null,
 				room: room
 			};
 		}
-		socketSession = sessions[room];
+		theRoom = rooms[room];
 		socket.join(room);
-		//socketSession.sockets.push(socket);
 
 		// Replay old data to the user
-		if (socketSession.img) {
-			socketSession.img.drawing = socketSession.drawing;
-			socket.emit("image-server", socketSession.img);
-			socketSession.img.drawing = undefined;
-		} else if (socketSession.drawing.length > 0) {
-			socket.emit("drawing-server", socketSession.drawing);
+		if (theRoom.img) {
+			theRoom.img.drawing = theRoom.drawing;
+			socket.emit("image-server", theRoom.img);
+			theRoom.img.drawing = undefined;
+		} else if (theRoom.drawing.length > 0) {
+			socket.emit("drawing-server", theRoom.drawing);
 		}
 	});
 
 	socket.on('line-client', function (data) {
-		if (!socketSession) {
+		if (!theRoom) {
 			socket.disconnect();
 			return;
 		}
-		socketSession.drawing.push(data);
+		theRoom.drawing.push(data);
 		broadcast("line-server",data);
 	});
 
 	socket.on('image-client', function (data) {
-		if (!socketSession) {
+		if (!theRoom) {
 			socket.disconnect();
 			return;
 		}
-		socketSession.img = data;
-		socketSession.drawing = []; // Image overwrites it
+		theRoom.img = data;
+		theRoom.drawing = []; // Image overwrites it
 		broadcast("image-server",data);
 	});
 
 	socket.on('clear-client', function (data) {
-		if (!socketSession) {
+		if (!theRoom) {
 			socket.disconnect();
 			return;
 		}
-		socketSession.drawing = [];
-		socketSession.img = null;
+		theRoom.drawing = [];
+		theRoom.img = null;
 		broadcast("clear-server",data);
 	});
 
