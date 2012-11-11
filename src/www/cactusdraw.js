@@ -187,7 +187,7 @@ var cactusUrl = (function () {
 				if (e.button === 0) {
 					$canvas.bind('mousemove', function (event) {
 						event.preventDefault();
-						handleMove(event.clientX, event.clientY);
+						handleMove(event.pageX, event.pageY);
 						return false;
 					});
 					return false;
