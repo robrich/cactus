@@ -27,7 +27,8 @@
 	cursor: pointer;
 }
 
-.cactusdraw .colorPicker-picker {
+/* can't contain style inside .cactusdraw because it appends to body, not to widget */
+.colorPicker-picker {
 	height: 16px;
 	width: 32px;
 	padding: 0;
@@ -37,8 +38,7 @@
 	line-height: 16px;
 	display: inline-block;
 }
-
-.cactusdraw .colorPicker-palette {
+.colorPicker-palette {
 	width: 110px;
 	position: absolute;
 	border: 1px solid #598FEF;
@@ -46,25 +46,24 @@
 	padding: 2px;
 	z-index: 9999;
 }
-.cactusdraw .colorPicker_hexWrap {
+.colorPicker_hexWrap {
 	width: 100%;
 	float:left;
 }
-.cactusdraw .colorPicker_hexWrap label {
+.colorPicker_hexWrap label {
 	font-size: 95%;
 	color: #2F2F2F;
 	margin: 5px 2px;
 	width: 25%;
 }
-.cactusdraw .colorPicker_hexWrap input {
+.colorPicker_hexWrap input {
 	margin: 5px 2px;
 	padding: 0;
 	font-size: 95%;
 	border: 1px solid #000;
 	width: 65%;
 }
-
-.cactusdraw .colorPicker-swatch {
+.colorPicker-swatch {
 	height: 12px;
 	width: 12px;
 	border: 1px solid #000;
