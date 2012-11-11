@@ -1,7 +1,8 @@
 /* Cactus Draw */
 /*global browser:true, Modernizr:false, io:false, jQuery:true, window:false, document:false, Image, FileReader, confirm, alert */
 var cactusUrl = (function () {
-	var ts= document.getElementsByTagName("script");
+	"use strict";
+	var ts = document.getElementsByTagName("script");
 	return ts[ts.length-1].src;
 }());
 
@@ -21,7 +22,7 @@ var cactusUrl = (function () {
 			'<div class="topbar">'+
 				'<div class="topContent">'+
 					'<a href="http://www.cactusdraw.com" target="_blank">'+
-						'<img class="cactus" src="cactus.png" width="14px" height="21px" alt="Cactus" />'+
+						'<img class="cactus" src="http://www.cactusdraw.com/cactus.png" width="14px" height="21px" alt="Cactus" />'+
 					'</a>&nbsp;&nbsp;'+
 					'<input type="color" class="color" value="#000000" placeholder="#000000" />&nbsp;&nbsp;'+
 					'<input type="number" class="linewidth" value="2" />&nbsp;&nbsp;'+
@@ -75,12 +76,8 @@ var cactusUrl = (function () {
 			img.src = options.image;
 		};
 		var draw = function (options) {
-			if(options.color) {
-				ctx.strokeStyle = options.color;
-			}
-			if(options.width) {
-				ctx.lineWidth = options.width;
-			}
+			ctx.strokeStyle = options.color;
+			ctx.lineWidth = options.width;
 			ctx.beginPath();
 			ctx.moveTo(options.x1, options.y1);
 			ctx.lineTo(options.x2, options.y2);
