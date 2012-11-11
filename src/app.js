@@ -6,16 +6,16 @@
 //
 
 var express = require("express"),
-	io = require("socket.io"),
+	sio = require("socket.io"),
 	http = require("http");
 
 var app = express(),
 	server = http.createServer(app),
-	sio = io.listen(server);
+	io = sio.listen(server);
 
 app.use(express.static(__dirname+'/www'));
 
-sio.configure(function () {
+io.configure(function () {
 	/*
 	https://github.com/learnboost/socket.io/wiki/Configuring-Socket.IO
 	0 - error
@@ -23,7 +23,7 @@ sio.configure(function () {
 	2 - info
 	3 - debug
 	*/
-	sio.set('log level', 1);
+	io.set('log level', 1);
 });
 
 var port = process.env.PORT || 8090;
@@ -36,11 +36,11 @@ var rooms = {};
 
 // -server is "from server to client"
 // -client is "from client to server"
-sio.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
 	var theRoom = null;
 	
 	var broadcast = function (event, data) {
-		sio.sockets.in(theRoom.room).emit(event, data);
+		socket.broadcast.to(theRoom.room).emit(event, data);
 	};
 
 	socket.on('connect-client', function (data) {
