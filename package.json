@@ -1,7 +1,7 @@
 {
   "name": "cactusdraw",
   "description": "Collaborative drawing app as a jQuery widget",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "homepage": "http://cactusdraw.com",
   "author": {
     "name": "Rob Richardson",
