@@ -1,0 +1,25 @@
+{
+	"bitwise": true,
+	"camelcase": true,
+	"curly": true,
+	"es3": true,
+	"eqeqeq": true,
+	"forin": true,
+	"futurehostile": true,
+	"freeze": true,
+	"immed": true,
+	"latedef": true,
+	"newcap": true,
+	"noarg": true,
+	"nocomma": true,
+	"nonbsp": true,
+	"noempty": true,
+	"nonew": true,
+	"strict": true,
+	"trailing": true,
+	"undef": true,
+	"unused": true,
+	"globals": {
+		"JSON": false
+	}
+}

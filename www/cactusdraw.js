@@ -112,7 +112,7 @@ var cactusUrl = (function () {
 				}
 			});
 		});
-		socket.on('clear-server', function (data) {
+		socket.on('clear-server', function (/*data*/) {
 			clear();
 		});
 
@@ -167,7 +167,7 @@ var cactusUrl = (function () {
 
 		if (Modernizr.touch) {
 			// touch
-			$canvas.bind('touchstart', function (e) {
+			$canvas.bind('touchstart', function (/*e*/) {
 				$canvas.bind('touchmove', function (event) {
 					event.preventDefault();
 					var e = event.originalEvent;
@@ -175,7 +175,7 @@ var cactusUrl = (function () {
 					return false;
 				});
 			});
-			$(document).bind('touchend', function (event) {
+			$(document).bind('touchend', function (/*event*/) {
 				$canvas.unbind('touchmove');
 				drawing = false;
 			});
@@ -191,7 +191,7 @@ var cactusUrl = (function () {
 				return false;
 			}
 		});
-		$(document).mouseup(function (event) {
+		$(document).mouseup(function (/*event*/) {
 			$canvas.unbind('mousemove');
 			drawing = false;
 		});
