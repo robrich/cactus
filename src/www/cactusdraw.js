@@ -1,5 +1,6 @@
 /* Cactus Draw */
-/*global browser:true, Modernizr:false, io:false, jQuery:true, window:false, document:false, Image, FileReader, confirm, alert */
+/* jshint browser:true */
+/*global Modernizr:false, io:false, jQuery:true, Image, FileReader, confirm, alert */
 var cactusUrl = (function () {
 	"use strict";
 	var ts = document.getElementsByTagName("script");
@@ -9,7 +10,7 @@ var cactusUrl = (function () {
 (function ($, window, document, undefined) {
 	"use strict";
 	var cactusdraw = function (that) {
-	
+
 		if (!Modernizr.canvas) {
 			that.text("your browser doesn't support cactus draw");
 			return;
@@ -17,7 +18,7 @@ var cactusUrl = (function () {
 
 		var room = that.data("room") || "public";
 		var writable = !!that.data("writable");
-		
+
 		that.html(
 			'<div class="topbar">'+
 				'<div class="topContent">'+
@@ -46,13 +47,13 @@ var cactusUrl = (function () {
 		var canvas = $canvas.get(0);
 
 		var ctx = canvas.getContext('2d');
-		
+
 		// Ensure we match the cactus draw server's url in spite of the widget's host
 		var linkParser = document.createElement("a");
 		linkParser.href = cactusUrl;
 		var socketUrl = linkParser.protocol+'//'+linkParser.host+'/';
 		var socket = io.connect(socketUrl);
-		
+
 		// Offset the window drawing position by the canvas's position so it'll draw on the canvas
 		var canvasLeft = $canvas.offset().left;
 		var canvasTop = $canvas.offset().top;
@@ -178,23 +179,22 @@ var cactusUrl = (function () {
 				$canvas.unbind('touchmove');
 				drawing = false;
 			});
-		} else {
-			// mouse
-			$canvas.mousedown(function (e) {
-				if (e.button === 0) {
-					$canvas.bind('mousemove', function (event) {
-						event.preventDefault();
-						handleMove(event.pageX, event.pageY);
-						return false;
-					});
-					return false;
-				}
-			});
-			$(document).mouseup(function (event) {
-				$canvas.unbind('mousemove');
-				drawing = false;
-			});
 		}
+		// mouse
+		$canvas.mousedown(function (e) {
+			if (e.button === 0) {
+				$canvas.bind('mousemove', function (event) {
+					event.preventDefault();
+					handleMove(event.pageX, event.pageY);
+					return false;
+				});
+				return false;
+			}
+		});
+		$(document).mouseup(function (event) {
+			$canvas.unbind('mousemove');
+			drawing = false;
+		});
 
 		//
 		// file upload
@@ -356,13 +356,13 @@ var cactusUrl = (function () {
 		resizeCanvas();
 
 	};
-	
+
 	$.fn.cactusdraw = function () {
 		this.each(function() {
 			cactusdraw($(this));
 		});
 	};
-	
+
 	// FRAGILE: A bit weird for a plugin to launch itself,
 	// FRAGILE: but must presume the class name for css
 	// FRAGILE: so may as well just make it easier for users to consume

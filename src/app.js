@@ -1,32 +1,20 @@
-/*jshint es5:true */
-/*global node:true, require:false, process:false, console:false, __dirname:false */
+/*jshint node:true */
 
 //
 // The server
 //
 
-var express = require("express"),
-	sio = require("socket.io"),
-	http = require("http");
+var express = require("express");
+var sio = require("socket.io");
+var http = require("http");
+var serveStatic = require('serve-static');
+var path = require('path');
 
-var app = express(),
-	server = http.createServer(app),
-	io = sio.listen(server);
+var app = express();
+var server = http.Server(app);
+var io = sio(server);
 
-app.use(express.static(__dirname+'/www'));
-
-io.configure(function () {
-	/*
-	https://github.com/learnboost/socket.io/wiki/Configuring-Socket.IO
-	0 - error
-	1 - warn
-	2 - info
-	3 - debug
-	*/
-	io.set('log level', 1);
-	io.set("transports", ["xhr-polling"]); 
-	io.set("polling duration", 10);
-});
+app.use('/',serveStatic(path.join(__dirname,'www')));
 
 var port = process.env.PORT || 8090;
 server.listen(port, function () {
@@ -38,9 +26,9 @@ var rooms = {};
 
 // -server is "from server to client"
 // -client is "from client to server"
-io.sockets.on('connection', function (socket) {
+io.on('connection', function (socket) {
 	var theRoom = null;
-	
+
 	var broadcast = function (event, data) {
 		socket.broadcast.to(theRoom.room).emit(event, data);
 	};
