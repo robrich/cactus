@@ -3,6 +3,7 @@
 'use strict';
 
 var gulp = require('gulp');
+var gulpIf = require('gulp-if');
 var gutil = require('gulp-util');
 var csslint = require('gulp-csslint');
 var header = require('gulp-header');
@@ -19,10 +20,13 @@ var through2 = require('through2');
 
 var paths = {
 	js: ['**/*.js', '!**/node_modules/**', '!**/dist/**/*.js'],
-	jshint: ['Gulpfile.js', 'app.js', 'www/cactusdraw.js'],
-	css: ['www/*.css'],
-	img: ['www/*.gif', 'www/*.png', 'www/*.jpg'],
-	dist: 'dist'
+	jshint: ['Gulpfile.js', 'app.js', 'public/cactusdraw.js'],
+	css: ['public/*.css'],
+	img: ['public/*.gif', 'public/*.png', 'public/*.jpg'],
+	html: 'public/*.html',
+	pkg: 'package.json',
+	dist: '../dist',
+	distClient: '../dist/public'
 };
 
 var gitHash;
@@ -123,7 +127,7 @@ gulp.task('jshint', function(cb) {
 gulp.task('jsmin', ['gitHash'], function() {
 	return gulp.src(paths.js)
 		.pipe(uglify())
-		.pipe(header(buildHeader()))
+		.pipe(gulpIf(/cactusdraw\.js/, header(buildHeader())))
 		.pipe(gulp.dest(paths.dist));
 });
 
@@ -156,12 +160,22 @@ gulp.task('cssmin', ['gitHash'], function () {
 	return gulp.src(paths.css)
 		.pipe(minifyCss())
 		.pipe(header(buildHeader()))
-		.pipe(gulp.dest(paths.dist));
+		.pipe(gulp.dest(paths.distClient));
 });
 
 gulp.task('imgmin', function () {
 	return gulp.src(paths.img)
+		.pipe(gulp.dest(paths.distClient));
+});
+
+gulp.task('htmlmin', function () {
+	return gulp.src(paths.html)
+		.pipe(gulp.dest(paths.distClient));
+});
+
+gulp.task('pkg', function () {
+	return gulp.src(paths.pkg)
 		.pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('default', ['jshint', 'csslint', 'jsmin', 'cssmin', 'imgmin']);
+gulp.task('default', ['jshint', 'csslint', 'jsmin', 'cssmin', 'imgmin', 'htmlmin', 'pkg']);

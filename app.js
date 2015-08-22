@@ -15,7 +15,7 @@ var app = express();
 var server = http.Server(app);
 var io = sio(server);
 
-app.use('/',serveStatic(path.join(__dirname,'www')));
+app.use('/',serveStatic(path.join(__dirname,'public')));
 
 var port = process.env.PORT || 8090;
 server.listen(port, function () {
