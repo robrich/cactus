@@ -25,7 +25,7 @@
     "node": "0.12.x"
   },
   "scripts": {
-    "start": "app.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "express": "^4.13.3",
